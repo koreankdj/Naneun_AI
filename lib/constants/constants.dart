@@ -3,8 +3,11 @@ import 'package:nanen_stot/widgets/text_widget.dart';
 
 // origin color
 // Color scaffoldBackgroundColor = const Color(0xFF343541);
-Color scaffoldBackgroundColor = const Color.fromARGB(255, 169, 155, 181);
-Color cardColor = const Color.fromARGB(255, 90, 78, 100);
+Color scaffoldBackgroundColor = const Color(0xffC2BDE0);
+Color cardColor = const Color(0xff9990BA);
+
+Color pluss = const Color(0xffC2BDE0);
+Color pluss2 = const Color(0xff9990BA);
 
 // List<String> models = [
 //   'Model1',

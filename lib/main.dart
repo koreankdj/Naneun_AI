@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        home: const HomePage(),
-        //home: const ChatScreen(),
+        //home: const HomePage(),
+        home: const ChatScreen(),
         title: 'Speech to Text Test1',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

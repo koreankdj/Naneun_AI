@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:nanen_stot/models/chat_model.dart';
 import 'package:nanen_stot/services/api_services.dart';
@@ -15,10 +18,13 @@ class ChatProvider with ChangeNotifier {
 
   Future<void> sendMessageAndGetAnswers(
       {required String msg, required String chosenModelId}) async {
-    chatList.addAll(await ApiService.sendMessage(
-      message: msg,
-      modelId: chosenModelId,
-    ));
+    chatList.addAll(
+      await ApiService.sendMessage(
+        message: msg,
+        modelId: chosenModelId,
+        //log(utf8.decode(msg)),
+      ),
+    );
     notifyListeners();
   }
 }

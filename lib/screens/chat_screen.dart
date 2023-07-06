@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:nanen_stot/constants/colors.dart';
 import 'package:nanen_stot/constants/constants.dart';
 import 'package:nanen_stot/models/chat_model.dart';
 import 'package:nanen_stot/providers/chats_provider.dart';
@@ -12,6 +14,7 @@ import 'package:nanen_stot/services/services.dart';
 import 'package:nanen_stot/widgets/chat_widget.dart';
 import 'package:nanen_stot/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -21,7 +24,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  SpeechToText speechToText = SpeechToText();
+  var text = "버튼을 누르고 말씀하세요";
   bool _isTyping = false;
+  var isListening = false;
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -68,7 +74,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: Colors.white,
               ))
         ],
-        backgroundColor: Colors.deepPurple.shade200,
+        //backgroundColor: Colors.deepPurple.shade200,
+        backgroundColor: cardColor,
       ),
       // Logo 수정
       body: SafeArea(
@@ -97,7 +104,8 @@ class _ChatScreenState extends State<ChatScreen> {
               height: 15,
             ),
             Material(
-              color: Colors.deepPurple.shade200,
+              //color: Colors.deepPurple.shade200,
+              color: cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -113,22 +121,68 @@ class _ChatScreenState extends State<ChatScreen> {
                             chatProvider: chatProvider,
                           );
                         },
-                        decoration: const InputDecoration.collapsed(
-                            hintText: "버튼을 누르고 말씀해주세요",
-                            hintStyle: TextStyle(color: Colors.white)),
+                        decoration: InputDecoration.collapsed(
+                            hintText: text,
+                            hintStyle: const TextStyle(color: Colors.white)),
                       ),
                     ),
-                    IconButton(
-                        onPressed: () async {
-                          sendMessageFCT(
-                            modelsProvider: modelsProvider,
-                            chatProvider: chatProvider,
-                          );
+                    AvatarGlow(
+                      endRadius: 25.0,
+                      animate: isListening,
+                      duration: const Duration(microseconds: 2000),
+                      glowColor: bgColor,
+                      repeat: true,
+                      repeatPauseDuration: const Duration(milliseconds: 100),
+                      showTwoGlows: true,
+                      child: GestureDetector(
+                        onTapDown: (details) async {
+                          if (!isListening) {
+                            var available = await speechToText.initialize();
+                            if (available) {
+                              setState(() {
+                                isListening = true;
+                                speechToText.listen(
+                                  onResult: (result) {
+                                    setState(() {
+                                      text = result.recognizedWords;
+                                    });
+                                  },
+                                );
+                              });
+                            }
+                          }
                         },
-                        icon: Icon(
-                          _isTyping ? Icons.mic : Icons.mic_none,
-                          color: Colors.white,
-                        ))
+                        onTapUp: (details) {
+                          setState(() {
+                            isListening = false;
+                          });
+                          speechToText.stop();
+                          textEditingController.text = text;
+                          log(text);
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: bgColor,
+                          radius: 35,
+                          child: Icon(isListening ? Icons.mic : Icons.mic_none,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        sendMessageFCT(
+                          modelsProvider: modelsProvider,
+                          chatProvider: chatProvider,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -62,8 +62,8 @@ class ApiService {
         ),
       );
 
-      Map jsonResponse = jsonDecode(response.body);
-
+      //origin Map jsonResponse = jsonDecode(response.body);
+      Map jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       if (jsonResponse['error'] != null) {
         //print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
         throw HttpException(jsonResponse['error']["message"]);
