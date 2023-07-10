@@ -1,3 +1,4 @@
 String BASE_URL = "https://api.openai.com/v1";
-String API_KEY = "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";
+// Enter your openai account API_KEY
+String API_KEY = "";
 //String API_KEY = "sss";
